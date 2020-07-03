@@ -1,0 +1,171 @@
+============================================
+How to build Modular application in laravel
+============================================
+*) Advantage : create modules for one project and use it in another projects...
+
+*) Each module will have it's own controllers,models,views,middlewares etc...
+
+*) Loose coupling : Each part of the application is created as a module and each module can communicate with each other
+
+Installation and Setup
+---------------------------
+*) To install the package through Composer, run the following command:
+composer require nwidart/laravel-modules
+
+*)php artisan vendor:publish —-provider=”Nwidart\Modules\LaravelModulesServiceProvider”
+
+*) Make sure the follwing code is presented in composer.json file
+"autoload": {
+        "psr-4": {
+            "App\\": "app/",
+             "Modules\\": "Modules/"
+        },
+        "classmap": [
+            "database/seeds",
+            "database/factories"
+        ]
+    },
+
+*) composer dump-autoload
+
+---------------------------------------
+We will create he following project structure
+
+Project
+	->app
+	->Modules
+		->Test1
+			->Config
+			->Console
+			->Database
+			->Entities
+				->Customer.php
+			->Http
+				->Controllers
+					->TestController.php
+			->Resources
+				->assets
+				->views
+					->layouts
+						->master.blade.php
+					->customer
+						->index.blade.php
+						->create.blade.php
+			->Routes
+				->web.php
+				->api.php
+		->Test2
+		->Test3
+----------------------------------------
+To create a module
+
+*)php artisan module:make Test
+
+To create multiple modules
+*)php artisan module:make Test Test2 Test3
+
+Whenever we create modules automatically a folder called "Modules" will be created in the same level of app folder
+and our all created modules will be inside this folder
+
+---------------------------------------------
+To create a Customer model under Test1 Module
+*) php artisan module:make-model Customer Test1
+
+inside the Test1 Module Customer Model will be created under Entities folder.
+
+If we want to create a migration file as well with model
+*) php artisan module:make-model Customer -m Test1
+
+--------------------------------------------------
+To create a migration file seperately
+*) php artisan module:make-migration create_customers_table Test1
+
+----------------------------------------------------------------
+To run a single module migrations
+*) php artisan module:migrate Test1
+
+
+To run all migration
+*) php artisan module:publish-migration Test1
+   php artisan migrate
+
+Now all the tables will be populated...
+
+---------------------------------------------------
+To create a controller
+*) php artisan module:make-controller TestController Test1
+
+--------------------------------------------------------------
+To load a view from controller
+first we need to import Our Models by using 
+
+*) use Modules\Test1\Entities\Customer;
+
+and then follow the sample
+
+<?php
+namespace Modules\Claims\Http\Controllers;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
+use Modules\Test1\Entities\Customer;
+
+class TestController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     * @return Response
+     */
+    public function index()
+    {
+	/* it goes inside the Test1 module and find the folder called customer and load the index.blade.php
+        return view('Test1::customer.index');
+    }
+    /**
+     * Show the form for creating a new resource.
+     * @return Response
+     */
+    public function create()
+    {
+        return view('Test1::customer.create');
+    }
+}
+
+--------------------------------------------------------------------
+To register  modules routes go to te "Routes" folder under that module
+and open wep.php file
+
+<?php
+
+Route::prefix('Test1')->group(function(){
+	
+	Route::get('/', 'TestController@index');
+});
+
+----------------------------------------------------------------
+To make Module Layouts page
+*) open index.blade.php from customer folder
+
+@extends('Test1::layouts.master')
+
+@section('content')
+	<h1>This is Test1 Module Index page </h1>
+@endsection/@stop
+
+
+*) Open master.blade.php from Customer Module
+<doctype>
+<html>
+<head>
+</head>
+<body>
+	@yield('content')
+</body>
+</html>
+
+------------------------------------
+Now load the project url in browser...
+------------------------------------
+
+
+

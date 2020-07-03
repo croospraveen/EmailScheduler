@@ -1,0 +1,25 @@
+{
+    "name": "nwidart/escheduler",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Escheduler\\Providers\\EschedulerServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Escheduler\\": ""
+        }
+    }
+}
